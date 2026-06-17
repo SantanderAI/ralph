@@ -10,6 +10,8 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/SantanderAI/ralph/badge)](https://securityscorecards.dev/viewer/?uri=github.com/SantanderAI/ralph)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196.svg)](https://www.conventionalcommits.org)
 
+Part of [**Santander AI Open Source**](https://github.com/SantanderAI) — open source AI projects from Banco Santander ([santander.com](https://santander.com)).
+
 `ralph` runs an AI coding CLI in a loop, starting a **fresh session on every
 iteration** and feeding it the same prompt. It is a thin, dependency-free Bash
 wrapper (`ralph-loop.sh`) around the CLIs you already have installed —
