@@ -1,0 +1,72 @@
+# Copyright (c) 2026 Santander Group
+# SPDX-License-Identifier: Apache-2.0
+#
+# Lint + static analysis + tests for the shell loop scripts.
+# ralph is a dependency-free Bash / PowerShell project, so the toolchain is
+# ShellCheck (Bash), PSScriptAnalyzer (PowerShell) and bats (tests). All three
+# tools are installed from the runner image rather than via package extras.
+#
+# NOTE: before publishing, keep every `uses:` action reference pinned to a
+#       40-char commit SHA (use `pin-github-action`).
+
+name: CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shellcheck:
+    name: ShellCheck (Bash)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Run ShellCheck
+        run: |
+          set -euo pipefail
+          shellcheck --version
+          # Gate on warning+error; info/style notes (e.g. SC2012) are reported but non-fatal.
+          shellcheck --severity=warning ralph-loop.sh
+
+  psscriptanalyzer:
+    name: PSScriptAnalyzer (PowerShell)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+          # Settings exclude cmdlet/module-design conventions that don't apply to a
+          # standalone automation script (see PSScriptAnalyzerSettings.psd1).
+          $results = Invoke-ScriptAnalyzer -Path ./ralph-loop.ps1 -Settings ./PSScriptAnalyzerSettings.psd1
+          $results | Format-Table -AutoSize
+          if ($results.Count -gt 0) {
+            Write-Error "PSScriptAnalyzer reported $($results.Count) issue(s)."
+            exit 1
+          }
+          Write-Host "OK: no PSScriptAnalyzer warnings or errors."
+
+  test:
+    name: Tests (bats)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      - name: Run bats suite
+        run: |
+          set -euo pipefail
+          bats --version
+          bats tests/

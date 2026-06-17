@@ -1,0 +1,42 @@
+# Copyright (c) 2026 Santander Group
+# SPDX-License-Identifier: Apache-2.0
+#
+# License compliance. ralph has no third-party runtime dependencies, so there
+# is no dependency-license allowlist to enforce; this workflow verifies that
+# every shell source file declares an SPDX-License-Identifier.
+# Keep action references pinned to SHA digests before publishing.
+
+name: License check
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  spdx-headers:
+    name: SPDX headers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Verify every shell source declares SPDX-License-Identifier
+        run: |
+          set -euo pipefail
+          missing=0
+          # Scan the loop scripts and the justfile. Skill markdown docs are
+          # documentation, not source, and are excluded.
+          while IFS= read -r f; do
+            if ! head -n 5 "$f" | grep -q "SPDX-License-Identifier:"; then
+              echo "MISSING SPDX header: $f"
+              missing=$((missing + 1))
+            fi
+          done < <(find . -type f \( -name "*.sh" -o -name "*.ps1" -o -name "justfile" \) -not -path "./.git/*")
+          if [ "$missing" -gt 0 ]; then
+            echo "Found $missing file(s) without SPDX header."
+            exit 1
+          fi
+          echo "OK: all shell sources have SPDX headers."

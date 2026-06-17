@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "ralph: a parametrizable loop runner for AI coding CLIs"
+abstract: >-
+  A dependency-free Bash / PowerShell wrapper that runs an AI coding CLI
+  (Codex, Claude Code, Gemini CLI, Devin) in a loop, starting a fresh LLM agent
+  session on every iteration and feeding it the same prompt, for long unattended
+  "keep working until it's done" runs.
+type: software
+authors:
+  - family-names: "Gallego Rodríguez"
+    given-names: "César"
+repository-code: "https://github.com/SantanderAI/ralph"
+url: "https://gitlab.com/gallego.cesar/ralph"
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-06-17
+keywords:
+  - ai
+  - llm
+  - llm-agents
+  - ai-agents
+  - developer-tools
+  - automation

@@ -1,0 +1,34 @@
+# Copyright (c) 2026 Santander Group
+# SPDX-License-Identifier: Apache-2.0
+#
+# Dependabot configuration.
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# NOTE: ralph is a dependency-free Bash / PowerShell project — there is no
+# package manifest to track. The only managed dependencies are the GitHub
+# Actions used by the workflows, whose SHA pins Dependabot keeps fresh.
+
+version: 2
+updates:
+  # GitHub Actions used by workflows in .github/workflows/
+  # Dependabot keeps SHA pins fresh and bumps the human-readable version comment.
+  # Grouped so a single PR covers all minor/patch action bumps.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Madrid
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "ci(deps)"
+      include: scope
+    groups:
+      gha-minor-patch:
+        update-types:
+          - minor
+          - patch
