@@ -1,4 +1,7 @@
 #!/bin/sh
+# Copyright (c) 2026 César Gallego Rodríguez
+# SPDX-License-Identifier: Apache-2.0
+#
 # ralph installer / updater — no dependencies beyond curl + tar.
 #
 # Installs ralph-loop.sh to ~/.local/bin and copies the bundled skills
