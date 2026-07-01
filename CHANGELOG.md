@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `.github/dependabot.yml` — monthly GitHub Actions updates
   - README badges, attribution line, and Contributing/Security/License/Citation sections
 
+### Fixed
+- `ralph-loop.sh` no longer crashes on macOS (bash 3.2) with
+  `mem_limit_prefix[@]: unbound variable`. Empty-array expansions now use the
+  `${arr[@]:+"${arr[@]}"}` idiom, which is safe under `set -u` on bash < 4.4
+  (macOS default) and expands identically to `"${arr[@]}"` when the RAM-limit
+  prefix is populated on Linux.
+
 ### Changed
 - `NOTICE`, source headers and `CITATION.cff` declare **César Gallego Rodríguez**
   as the original author and copyright holder, with a link to the original

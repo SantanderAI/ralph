@@ -52,6 +52,16 @@ teardown() {
   [[ "$output" == *"PROMPT_FILE must exist"* ]]
 }
 
+@test "mem_limit_prefix expansions are safe under set -u (bash 3.2)" {
+  # Regression for the macOS bash 3.2 crash: expanding an empty array with
+  # "${arr[@]}" under set -u raises "unbound variable" on bash < 4.4. Every
+  # mem_limit_prefix expansion must use the ${arr[@]:+"${arr[@]}"} idiom.
+  # An unsafe expansion is a bare "${mem_limit_prefix[@]}" (quote preceded by
+  # whitespace); the safe idiom has the quote preceded by ':+'.
+  run grep -nE '[[:space:]]"\$\{mem_limit_prefix\[@\]\}"' "$SCRIPT"
+  [ "$status" -ne 0 ]
+}
+
 @test "stop.md present at startup: exits 0 without running an agent" {
   echo "do something" > prompt.md
   echo "stop" > stop.md
