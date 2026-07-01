@@ -64,6 +64,15 @@ It accepts `--no-skills`, `--ref <branch|tag>`, `--repo <owner/name>` and
 curl -fsSL https://raw.githubusercontent.com/SantanderAI/ralph/main/install.sh | sh -s -- --no-skills
 ```
 
+On **Windows / PowerShell** (pwsh 6+), the equivalent installs `ralph-loop.ps1`:
+
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/SantanderAI/ralph/main/install.ps1 | iex"
+```
+
+The PowerShell installer is configured through the same `RALPH_SKIP_SKILLS`,
+`RALPH_REF`, `RALPH_REPO` and `RALPH_INSTALL_DIR` environment variables.
+
 Alternatively, from a clone with [`just`](https://github.com/casey/just):
 
 ```sh
