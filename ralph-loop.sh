@@ -305,7 +305,7 @@ run_tool() {
       if [ "$ralph_thinking" = false ]; then
         extra_flags=(-c 'model_reasoning_summary="none"' -c hide_agent_reasoning=true)
       fi
-      "${mem_limit_prefix[@]}" "$tool_command" exec "${tool_flags[@]}" \
+      ${mem_limit_prefix[@]:+"${mem_limit_prefix[@]}"} "$tool_command" exec "${tool_flags[@]}" \
         -m "$tool_model" \
         -o "$current_console_output" \
         -c "model_reasoning_effort=\"$tool_reasoning_effort\"" \
@@ -319,7 +319,7 @@ run_tool() {
       else
         env_prefix=(env -u CLAUDE_CODE_DISABLE_THINKING "CLAUDE_CODE_EFFORT_LEVEL=$tool_reasoning_effort")
       fi
-      "${mem_limit_prefix[@]}" "${env_prefix[@]}" "$tool_command" "${tool_flags[@]}" --model "$tool_model" --effort "$tool_reasoning_effort" -p <"$prompt_path"
+      ${mem_limit_prefix[@]:+"${mem_limit_prefix[@]}"} "${env_prefix[@]}" "$tool_command" "${tool_flags[@]}" --model "$tool_model" --effort "$tool_reasoning_effort" -p <"$prompt_path"
       ;;
     gemini)
       gemini_settings_dir=$(mktemp -d "$RALPH_LOCAL_DIR/gemini-settings.XXXXXX") || return 1
@@ -343,7 +343,7 @@ run_tool() {
         printf '}\n'
       } >"$gemini_settings_file"
 
-      "${mem_limit_prefix[@]}" \
+      ${mem_limit_prefix[@]:+"${mem_limit_prefix[@]}"} \
         env GEMINI_CLI_SYSTEM_SETTINGS_PATH="$gemini_settings_file" \
         "$tool_command" "${tool_flags[@]}" --model ralph-selected <"$prompt_path"
       run_exit_code=$?
@@ -354,7 +354,7 @@ run_tool() {
       # Devin reads the prompt from --prompt-file, not stdin (piping the prompt
       # makes it drop into REPL mode and panic). It has no reasoning/thinking
       # knob, so the capability tier only selects the model. -p is print mode.
-      "${mem_limit_prefix[@]}" "$tool_command" "${tool_flags[@]}" \
+      ${mem_limit_prefix[@]:+"${mem_limit_prefix[@]}"} "$tool_command" "${tool_flags[@]}" \
         --model "$tool_model" --prompt-file "$prompt_path" -p
       ;;
   esac
