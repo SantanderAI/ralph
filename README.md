@@ -48,7 +48,23 @@ should tell the agent to read that state and make incremental progress.
 
 ## Installation
 
-Install the script to `~/.local/bin`:
+The quickest way — a dependency-free installer (needs only `curl` and `tar`)
+that copies `ralph-loop.sh` to `~/.local/bin` and installs the bundled skills.
+Re-run it any time to update:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SantanderAI/ralph/main/install.sh | sh
+```
+
+It accepts `--no-skills`, `--ref <branch|tag>`, `--repo <owner/name>` and
+`--install-dir <dir>` (also available as the `RALPH_SKIP_SKILLS`, `RALPH_REF`,
+`RALPH_REPO` and `RALPH_INSTALL_DIR` environment variables), e.g.:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/SantanderAI/ralph/main/install.sh | sh -s -- --no-skills
+```
+
+Alternatively, from a clone with [`just`](https://github.com/casey/just):
 
 ```sh
 just install
