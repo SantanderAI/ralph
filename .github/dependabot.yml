@@ -28,7 +28,6 @@ updates:
       prefix: "ci(deps)"
       include: scope
     groups:
-      gha-minor-patch:
-        update-types:
-          - minor
-          - patch
+      github-actions:
+        patterns:
+          - "*"
