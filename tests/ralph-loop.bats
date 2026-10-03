@@ -71,3 +71,49 @@ teardown() {
   # The stop file must NOT be deleted.
   [ -f stop.md ]
 }
+
+# Log rotation runs once per iteration. These tests use a fake CLI so the loop
+# can run to completion without any real tool installed.
+write_env() {
+  local ws=$1 max_logs=$2
+  mkdir -p "$ws/.ralph"
+  cat > "$ws/.ralph/.env" <<CFG
+RALPH_TOOL=codex
+RALPH_MODEL_CAPABILITY=med
+RALPH_THINKING=false
+RALPH_SWITCH_ON_EXHAUSTION=false
+RALPH_MEMORY_MAX=
+RALPH_CODEX_COMMAND=$WORK/faketool
+RALPH_CODEX_FLAGS="--noop"
+RALPH_LOOP_MAX_LOGS=$max_logs
+CFG
+  printf 'do a thing\n' > "$ws/p.md"
+}
+
+setup_fake_tool() {
+  cat > "$WORK/faketool" <<'SH'
+#!/usr/bin/env bash
+cat >/dev/null
+echo "faketool $*"
+SH
+  chmod +x "$WORK/faketool"
+}
+
+@test "log rotation still trims when the workspace path contains a space" {
+  setup_fake_tool
+  ws="$WORK/my ws"
+  write_env "$ws" 1
+  cd "$ws"
+  run bash "$SCRIPT" 3 p.md
+  [ "$(find "$ws/.ralph/logs" -name '*.log' | wc -l)" -eq 1 ]
+}
+
+@test "log rotation never removes a file outside the log directory" {
+  setup_fake_tool
+  ws="$WORK/my ws"
+  write_env "$ws" 1
+  : > "$WORK/my"
+  cd "$ws"
+  run bash "$SCRIPT" 3 p.md
+  [ -e "$WORK/my" ]
+}

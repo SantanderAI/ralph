@@ -185,8 +185,20 @@ normalize_memory_max() {
 rotate_logs() {
   local log_dir=$1
   local max_logs=$2
+  local -a logs=()
+  local line
 
-  ls -t "$log_dir"/*.log 2>/dev/null | tail -n +"$((max_logs + 1))" | xargs -r rm -f --
+  # Newest first. NUL-delimited so workspace paths with spaces (or other
+  # whitespace) stay one entry; xargs would split them into separate paths.
+  while IFS= read -r -d '' line; do
+    logs+=("${line#*$'\t'}")
+  done < <(find "$log_dir" -maxdepth 1 -type f -name '*.log' -printf '%T@\t%p\0' 2>/dev/null | sort -z -t $'\t' -k1,1nr)
+
+  # Only ever remove entries inside $log_dir, and only the ones past max_logs.
+  local f
+  for f in "${logs[@]:max_logs}"; do
+    rm -f -- "$f"
+  done
 }
 
 find_stop_file() {
